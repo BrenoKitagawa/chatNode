@@ -22,9 +22,9 @@ const Chat = () => {
         createdAt:"12:00"
     },  {
         fromMe:true,
-        nome:"isadora",
+        nome:"breno",
         text:"lorem Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquam laborum voluptate necessitatibus, minima commodi maiores molestias aspernatur voluptatem quod quas illo nobis blanditiis, voluptas dolores veniam magnam eligendi? Architecto, hic.",
-        createdAt:"12:00"
+         createdAt:"10:00"
     }, {
         fromMe:false,
         nome:"isadora",
@@ -36,17 +36,19 @@ const Chat = () => {
 
   return (
 
-    <div className='flex justify-between flex-col h-full relative'>
+    <div className='flex justify-between flex-col relative h-full'>
      
-                    <ScrollArea className="relative">
+                    <ScrollArea className="relative h-160 flex p-4">
+                              <div className='flex flex-col gap-2'>
 
+                              
                       {text.map((item,index)=>(
-                                         <Mensagem className="self-start"  key={index} nome={item.nome} fromMe={item.fromMe} text={item.text} horas={item.createdAt}/>
+                                         <Mensagem  key={index} nome={item.nome} fromMe={item.fromMe} text={item.text} horas={item.createdAt}/>
                       ))}
-     
+     </div>
                     </ScrollArea>
 
-                    <div className='flex items-center justify-center gap-2 w-full'>
+                    <div className='flex items-center justify-center gap-2 w-full absolute bottom-0'>
                         <Input className="font-extrabold text-2xl h-14" />
                         <Button  className="h-full w-15 cursor-pointer"> <CaretDoubleRightIcon size={32} /></Button>
                     </div>
