@@ -4,11 +4,13 @@ import { PropostaController } from "./controller/PropostaController.js";
 import { autenticar } from "./middleware/auth.js";
 import ServicoController from "./controller/ServicoController.js";
 import ChatController from "./controller/ChatController.js";
+import HistoricoController from "./controller/HistoricoController.js";
 const routes = express.Router()
 
 
 
-
+routes.get("/propostas/aceitas", autenticar, PropostaController.listarAceitas);
+routes.patch("/propostas/:id/finalizar", autenticar, PropostaController.finalizar);
 routes.post("/propostas", PropostaController.criar);
 routes.get("/propostas", PropostaController.listar);
 routes.get("/propostas/:id", PropostaController.buscarPorId);
@@ -42,6 +44,10 @@ routes.post("/chat/enviar", autenticar, ChatController.enviar);
 
 routes.get("/conversas", autenticar, ChatController.listarConversas);
 routes.post("/propostas/:propostaId/aceitar", autenticar, PropostaController.aceitar);
+
+
+routes.get("/historico/finalizados", autenticar, HistoricoController.listar);
+routes.patch("/historico/avaliar/:id", autenticar, HistoricoController.avaliar);
 
 
 export default routes;

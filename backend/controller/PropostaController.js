@@ -1,5 +1,7 @@
+import { Op } from "sequelize";
 import { Proposta } from "../models/Proposta.js";
 import { Servico } from "../models/Servico.js";
+import { HistoricoServico } from "../models/HistoricoServico.js";
 
 export const PropostaController = {
   
@@ -25,6 +27,92 @@ export const PropostaController = {
       return res.status(500).json({ erro: "Erro ao criar proposta: " + error.message });
     }
   },
+
+async listarAceitas(req, res) {
+  try {
+    const userId = req.userId;
+
+    console.log(userId)
+    const aceitas = await Proposta.findAll({
+      where: {
+        status: "aceita",
+        [Op.or]: [
+          { freelancerId: userId }, // usuário que enviou a proposta aceita
+          { clienteId: userId }     // usuário que recebeu e aceitou
+        ]
+      }
+    });
+
+    return res.json(aceitas);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ erro: "Erro ao listar propostas aceitas" });
+  }
+}
+,
+
+async finalizar(req, res) {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const proposta = await Proposta.findByPk(id);
+
+    if (!proposta) {
+      return res.status(404).json({ erro: "Proposta não encontrada" });
+    }
+
+    // só o dono do serviço pode finalizar
+    if (proposta.clienteId !== userId) {
+      return res.status(403).json({ erro: "Você não pode finalizar este serviço" });
+    }
+
+    proposta.status = "finalizado";
+    await proposta.save();
+
+    return res.json({ sucesso: true, mensagem: "Serviço finalizado com sucesso" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ erro: "Erro ao finalizar serviço" });
+  }
+},
+
+async finalizar(req, res) {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const proposta = await Proposta.findByPk(id);
+
+    if (!proposta) {
+      return res.status(404).json({ erro: "Proposta não encontrada" });
+    }
+    if (proposta.clienteId !== userId) {
+      return res.status(403).json({ erro: "Você não pode finalizar este serviço" });
+    }
+
+    proposta.status = "finalizado";
+    await proposta.save();
+
+    // pegar detalhes do serviço
+    const servico = await Servico.findByPk(proposta.trabalhoId);
+
+    await HistoricoServico.create({
+      trabalhoId: servico.id,
+      propostaId: proposta.id,
+      clienteId: proposta.clienteId,
+      freelancerId: proposta.freelancerId,
+      valorFinal: proposta.valor,
+      descricaoEntrega: proposta.descricao
+    });
+
+    return res.json({ mensagem: "Serviço finalizado e registrado no histórico" });
+
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ erro: "Erro ao finalizar serviço" });
+  }
+},
 
   // Listar todas
   async listar(req, res) {

@@ -100,19 +100,54 @@ const resposta = await fetch("http://localhost:3000/servicos", {
     }
   }
 
-  // -----------------------------
-  // FILTRAR SERVIÇOS
-  // -----------------------------
-  const servicosFiltrados = servicos.filter((s) => {
-    const buscaMatch =
-      filtro.busca === "" ||
-      s.titulo.toLowerCase().includes(filtro.busca.toLowerCase()) ||
-      s.descricao.toLowerCase().includes(filtro.busca.toLowerCase());
 
-    const minMatch = filtro.min === "" || s.valor >= Number(filtro.min);
-    const maxMatch = filtro.max === "" || s.valor <= Number(filtro.max);
-    return buscaMatch && minMatch && maxMatch;
+const [propostas, setPropostas] = useState([]);
+
+async function carregarPropostas() {
+  const resposta = await fetch("http://localhost:3000/propostas", {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
   });
+
+  const dados = await resposta.json();
+
+  console.log("Propostas carregadas:", dados);
+
+  setPropostas(Array.isArray(dados) ? dados : []);
+}
+
+
+useEffect(() => {
+  carregarServicos();
+  carregarPropostas();
+}, []);
+
+const servicosFiltrados = servicos.filter((servico) => {
+  
+  // Oculta serviços com proposta ativa
+  const propostaBloqueiaServico = propostas.some(
+    (p) =>
+      p.trabalhoId === servico.id &&
+      ["aceita", "finalizado", "em_andamento"].includes(p.status)
+  );
+
+  if (propostaBloqueiaServico) return false;
+
+  // filtros normais
+  const buscaMatch =
+    filtro.busca === "" ||
+    servico.titulo.toLowerCase().includes(filtro.busca.toLowerCase()) ||
+    servico.descricao.toLowerCase().includes(filtro.busca.toLowerCase());
+
+  const minMatch = filtro.min === "" || servico.valor >= Number(filtro.min);
+  const maxMatch = filtro.max === "" || servico.valor <= Number(filtro.max);
+
+  return buscaMatch && minMatch && maxMatch;
+});
+
+
+
 
   if (!usuario) return <p className="p-6">Carregando usuário...</p>;
 
@@ -197,41 +232,41 @@ const resposta = await fetch("http://localhost:3000/servicos", {
           </div>
         </div>
 
-        {/* LISTA DE SERVIÇOS */}
-        <div className="space-y-4">
-          {servicosFiltrados.map((s) => (
+       <div className="space-y-4">
+  {servicosFiltrados
+    .filter((s) => s.status !== "aceito") // ⬅️ remove aceitos da lista
+    .map((s) => (
+      <Card key={s.id} className="shadow-md">
+        <CardHeader>
+          <CardTitle>{s.titulo}</CardTitle>
+        </CardHeader>
 
-            <Card key={s.id} className="shadow-md">
-              <CardHeader>
-                <CardTitle>{s.titulo}</CardTitle>
-              </CardHeader>
+        <CardContent>
+          <p className="text-gray-700 mb-2">{s.descricao}</p>
 
-              <CardContent>
-                <p className="text-gray-700 mb-2">{s.descricao}</p>
+          <p className="text-sm text-gray-500 mb-4">
+            Criado por: <b>{s.clienteId}</b>
+          </p>
 
-                <p className="text-sm text-gray-500 mb-4">
-                  Criado por: <b>{s.clienteId}</b>
-                </p>
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold text-green-600">
+              R$ {s.valor}
+            </span>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-green-600">
-                    R$ {s.valor}
-                  </span>
+            <Button onClick={() => navigate(`/servico/${s.id}`)}>
+              Ver Detalhes
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    ))}
 
-                  <Button onClick={() => navigate(`/servico/${s.id}`)}>
-                    Ver Detalhes
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-
-          {servicosFiltrados.length === 0 && (
-            <p className="text-center text-muted-foreground">
-              Nenhum serviço encontrado.
-            </p>
-          )}
-        </div>
+  {servicosFiltrados.filter((s) => s.status !== "aceito").length === 0 && (
+    <p className="text-center text-muted-foreground">
+      Nenhum serviço disponível.
+    </p>
+  )}
+</div>
       </div>
     </>
   );

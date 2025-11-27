@@ -45,6 +45,19 @@ function navegar(path) {
 
           {/* CONVERSAS + BADGE */}
 
+<button
+  onClick={() => navigate("/propostas/aceitas")}
+  className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition"
+>
+  Propostas
+</button>
+
+ <button
+            onClick={() => navigate("/historico")}
+            className="hover:text-blue-600 transition"
+          >
+            Histórico
+          </button>
 
           <button
            onClick={() => navegar("/conversas")}
@@ -77,9 +90,7 @@ function navegar(path) {
 
             <DropdownMenuContent className="w-48 bg-white dark:bg-slate-800 dark:text-slate-100 border dark:border-slate-700">
               <DropdownMenuLabel>{usuario?.nome ?? "Usuário"}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navegar("perfil")}>
-                Perfil
-              </DropdownMenuItem>
+        
 
               <DropdownMenuSeparator />
 

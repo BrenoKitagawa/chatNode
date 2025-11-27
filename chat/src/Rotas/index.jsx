@@ -10,6 +10,9 @@ import TrabalhoDetalhes from '../paginas/trabalho/TrabalhoDetalhes'
 import AppLayout from '../layout/AppLayout'
 import Chat from '../paginas/chat/Chat'
 import Conversas from '../paginas/conversas/Conversas'
+import PropostasAceitas from '../paginas/propostas/PropostasAceitas'
+import AvaliarFreelancer from '../paginas/historico/AvaliarFreelancer'
+import HistoricoFinalizados from '../paginas/historico/HistoricoFinalizados'
 
 const Rotas = () => {
   return (
@@ -27,8 +30,10 @@ const Rotas = () => {
       <Route path="/principal" element={<Prinipal />} />
       <Route path="/servico/:id" element={<TrabalhoDetalhes />} />
       <Route path="/chat/:propostaId" element={<Chat />} />
-<Route path="/conversas" element={<Conversas />} />
-
+      <Route path="/conversas" element={<Conversas />} />
+      <Route path="/propostas/aceitas" element={<PropostasAceitas />} />
+      <Route path="/historico" element={<HistoricoFinalizados />} />
+          <Route path="/avaliar/:id" element={<AvaliarFreelancer />} />
     </Route>
 
     {/* Not Found */}

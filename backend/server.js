@@ -11,6 +11,7 @@ import { Servico } from "./models/Servico.js";
 import routes from "./Routes.js";
 import cors from "cors";
 import { Mensagem } from "./models/Mensagem.js";
+import { HistoricoServico } from "./models/HistoricoServico.js";
 
 const app = express();
 
@@ -20,6 +21,7 @@ const app = express();
 //await Proposta.sync();
 //await Servico.sync()
 //await Mensagem.sync()
+//await HistoricoServico.sync();
 
 
 
